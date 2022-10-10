@@ -1,16 +1,19 @@
 variable "app_name" {
-  type    = string
-  default = "app_name"
+  type        = string
+  default     = "app_name"
+  description = "Set this value to provide an app name that the resource relates to"
 }
 
 variable "business_unit" {
-  type    = string
-  default = "bu"
+  type        = string
+  default     = "bu"
+  description = "Set this value to describe a business unit if needed"
 }
 
 variable "context" {
-  type    = string
-  default = "it"
+  type        = string
+  default     = "it"
+  description = "Set this value to provide context to the resource. This would be used for things like 'hub', 'iam', 'mgmt' as it relates to the CAF platform landing zones. \n https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/"
 }
 
 variable "custom_name_format" {
@@ -21,7 +24,8 @@ variable "custom_name_format" {
     )
     error_message = "Name format must be a list with the following allowed values: 'resource_type', 'app_name','business_unit','region','environment','padding','context','sub_resource_type'"
   }
-  default = ["sub_resource_type", "resource_type", "app_name", "environment", "region", "padding"]
+  default     = ["sub_resource_type", "resource_type", "app_name", "environment", "region", "padding"]
+  description = "Name format must be a list with the following allowed values: 'resource_type', 'app_name','business_unit','region','environment','padding','context','sub_resource_type'"
 }
 
 variable "environment" {
@@ -30,7 +34,8 @@ variable "environment" {
     condition     = contains(["dev", "tst", "uat", "prd", "qa", "stg", "blu", "grn"], var.environment)
     error_message = "Environment must be one of the following values: 'dev','tst','uat','prd','qa','stg','blu','grn'"
   }
-  default = "prd"
+  default     = "prd"
+  description = "Environment must be one of the following values: 'dev','tst','uat','prd','qa','stg','blu','grn'"
 }
 
 variable "least_to_most_naming_standard" {
@@ -51,6 +56,12 @@ variable "most_to_least_naming_standard" {
   description = "Set this to true if you would like to use the standard for most specific to least specific ordering"
 }
 
+variable "padding" {
+  type        = string
+  default     = "01"
+  description = "If additional padding is needed to itterate over resources"
+}
+
 variable "prefix" {
   type        = list(string)
   default     = []
@@ -63,16 +74,29 @@ variable "region" {
     "name" = "eastus2"
     "slug" = "use2"
   }
+  description = "Provide a region and region 'slug'. Slug is used to shorten the name in to 4 character references for the region to provide a shorter name."
 }
 
 variable "resource_type" {
+  type        = string
+  default     = "app_service"
+  description = "This value must always be set. The name must one of the resource types shown in the outputs."
+}
+
+variable "separator" {
   type    = string
-  default = "app_service"
+  default = "-"
+  validation {
+    condition     = contains(["-", "_"], var.separator)
+    error_message = "Separator must be one of the following values: '-','_'"
+  }
+  description = "If you would like to choose between setting '-' (default) or '_' to separate parts of your resource name. Resources that do not allow '-' automatically ommit this variable."
 }
 
 variable "sub_resource_type" {
-  type    = string
-  default = "user_assigned_identity"
+  type        = string
+  default     = "user_assigned_identity"
+  description = "This value is optional. The name must one of the resource types shown in the outputs. Sub resource types are usually attached to the resource_type like a Public IP, NIC, managed identity etc."
 }
 
 variable "suffix" {
@@ -97,29 +121,4 @@ variable "unique-include-numbers" {
   description = "If you want to include numbers in the unique generation"
   type        = bool
   default     = true
-}
-
-
-
-
-
-
-
-
-
-
-
-
-variable "padding" {
-  type    = string
-  default = "01"
-}
-
-variable "separator" {
-  type    = string
-  default = "-"
-  validation {
-    condition     = contains(["-", "_"], var.separator)
-    error_message = "Separator must be one of the following values: '-','_'"
-  }
 }

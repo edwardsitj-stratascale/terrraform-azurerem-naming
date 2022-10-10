@@ -23,8 +23,20 @@ locals {
   suffix_safe            = lower(join("", var.suffix))
   suffix_unique_safe     = lower(join("", concat(var.suffix, [local.random])))
 
+  microsoft_caf_naming_standard = ["sub_resource_type", "resource_type", "app_name", "environment", "region", "padding"]
+  least_to_most_naming_standard = ["region", "environment", "context", "business_unit", "app_name", "resource_type", "sub_resource_type"]
+  most_to_least_naming_standard = ["sub_resource_type", "resource_type", "app_name", "business_unit", "context", "environment", "region"]
+
+  naming_standard = (var.microsoft_caf_naming_standard ? local.microsoft_caf_naming_standard :
+    (var.least_to_most_naming_standard ? local.least_to_most_naming_standard :
+      (var.most_to_least_naming_standard ? local.most_to_least_naming_standard :
+        var.custom_name_format
+      )
+    )
+  )
+
   name_format_map = {
-    for value in toset(var.naming_standard) :
+    for value in toset(local.naming_standard) :
     value => value == "resource_type" ? local.az[var.resource_type].slug :
     (value == "app_name" ? var.app_name :
       (value == "business_unit" ? var.business_unit :
@@ -41,17 +53,17 @@ locals {
     )
   }
   name_format_list = [
-    for value in var.name_format :
-    local.name_format[value]
+    for value in local.naming_standard :
+    local.name_format_map[value]
   ]
   resource_name             = local.az[var.resource_type].dashes ? join("${var.separator}", [for key, value in local.name_format_list : "${value}"]) : join("", [for key, value in local.name_format_list : "${value}"])
   resource_name_check_regex = length(regexall(local.az[var.resource_type].regex, local.resource_name)) > 0
   resource_name_check_min   = length(local.resource_name) <= local.az[var.resource_type].min_length
   resource_name_check_max   = length(local.resource_name) >= local.az[var.resource_type].max_length
   valid_name = (
-    resource_name_check_regex &&
-    resource_name_check_min &&
-    resource_name_check_max
+    local.resource_name_check_regex &&
+    local.resource_name_check_min &&
+    local.resource_name_check_max
   )
 
   // Names based in the recomendations of
@@ -101,7 +113,7 @@ locals {
       name        = substr(join("-", compact([local.prefix, "plan", local.suffix])), 0, 40)
       name_unique = substr(join("-", compact([local.prefix, "plan", local.suffix_unique])), 0, 40)
       dashes      = true
-      slug        = "plan"
+      slug        = "asp"
       min_length  = 1
       max_length  = 40
       scope       = "resourceGroup"

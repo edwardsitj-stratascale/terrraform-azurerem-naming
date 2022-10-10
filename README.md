@@ -10,7 +10,7 @@ With custom name format
 
 ```tf
 module "resource_group_name" {
-  source  = "Azure/naming/azurerm"
+  source  = "git::https://github.com/edwardsitj-stratascale/terrraform-azurerem-naming.git"
   
   custom_name_format = ["sub_resource_type", "resource_type", "app_name", "environment", "region", "padding"]
 
@@ -47,7 +47,7 @@ most_to_least_naming_standard
 ### Example
 ```tf
 module "resource_group_name" {
-  source  = "Azure/naming/azurerm"
+  source  = "git::https://github.com/edwardsitj-stratascale/terrraform-azurerem-naming.git"
   
   microsoft_caf_naming_standard = true
 
@@ -98,20 +98,20 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_app_name"></a> [app\_name](#input\_app\_name) | n/a | `string` | `"app_name"` | no |
-| <a name="input_business_unit"></a> [business\_unit](#input\_business\_unit) | n/a | `string` | `"bu"` | no |
-| <a name="input_context"></a> [context](#input\_context) | n/a | `string` | `"it"` | no |
-| <a name="input_custom_name_format"></a> [custom\_name\_format](#input\_custom\_name\_format) | n/a | `list(string)` | <pre>[<br>  "sub_resource_type",<br>  "resource_type",<br>  "app_name",<br>  "environment",<br>  "region",<br>  "padding"<br>]</pre> | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | n/a | `string` | `"prd"` | no |
+| <a name="input_app_name"></a> [app\_name](#input\_app\_name) | Set this value to provide an app name that the resource relates to | `string` | `"app_name"` | no |
+| <a name="input_business_unit"></a> [business\_unit](#input\_business\_unit) | Set this value to describe a business unit if needed | `string` | `"bu"` | no |
+| <a name="input_context"></a> [context](#input\_context) | Set this value to provide context to the resource. This would be used for things like 'hub', 'iam', 'mgmt' as it relates to the CAF platform landing zones. <br> https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/ | `string` | `"it"` | no |
+| <a name="input_custom_name_format"></a> [custom\_name\_format](#input\_custom\_name\_format) | Name format must be a list with the following allowed values: 'resource\_type', 'app\_name','business\_unit','region','environment','padding','context','sub\_resource\_type' | `list(string)` | <pre>[<br>  "sub_resource_type",<br>  "resource_type",<br>  "app_name",<br>  "environment",<br>  "region",<br>  "padding"<br>]</pre> | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | Environment must be one of the following values: 'dev','tst','uat','prd','qa','stg','blu','grn' | `string` | `"prd"` | no |
 | <a name="input_least_to_most_naming_standard"></a> [least\_to\_most\_naming\_standard](#input\_least\_to\_most\_naming\_standard) | Set this to true if you would like to use the standard for least specific to most specific ordering | `bool` | `false` | no |
 | <a name="input_microsoft_caf_naming_standard"></a> [microsoft\_caf\_naming\_standard](#input\_microsoft\_caf\_naming\_standard) | Set this to true if you would like to use the standard found in the example on https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming | `bool` | `false` | no |
 | <a name="input_most_to_least_naming_standard"></a> [most\_to\_least\_naming\_standard](#input\_most\_to\_least\_naming\_standard) | Set this to true if you would like to use the standard for most specific to least specific ordering | `bool` | `false` | no |
-| <a name="input_padding"></a> [padding](#input\_padding) | n/a | `string` | `"01"` | no |
+| <a name="input_padding"></a> [padding](#input\_padding) | If additional padding is needed to itterate over resources | `string` | `"01"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | It is not recommended that you use prefix by azure you should be using a suffix for your resources. | `list(string)` | `[]` | no |
-| <a name="input_region"></a> [region](#input\_region) | n/a | `map(string)` | <pre>{<br>  "name": "eastus2",<br>  "slug": "use2"<br>}</pre> | no |
-| <a name="input_resource_type"></a> [resource\_type](#input\_resource\_type) | n/a | `string` | `"app_service"` | no |
-| <a name="input_separator"></a> [separator](#input\_separator) | n/a | `string` | `"-"` | no |
-| <a name="input_sub_resource_type"></a> [sub\_resource\_type](#input\_sub\_resource\_type) | n/a | `string` | `"user_assigned_identity"` | no |
+| <a name="input_region"></a> [region](#input\_region) | Provide a region and region 'slug'. Slug is used to shorten the name in to 4 character references for the region to provide a shorter name. | `map(string)` | <pre>{<br>  "name": "eastus2",<br>  "slug": "use2"<br>}</pre> | no |
+| <a name="input_resource_type"></a> [resource\_type](#input\_resource\_type) | This value must always be set. The name must one of the resource types shown in the outputs. | `string` | `"app_service"` | no |
+| <a name="input_separator"></a> [separator](#input\_separator) | If you would like to choose between setting '-' (default) or '\_' to separate parts of your resource name. Resources that do not allow '-' automatically ommit this variable. | `string` | `"-"` | no |
+| <a name="input_sub_resource_type"></a> [sub\_resource\_type](#input\_sub\_resource\_type) | This value is optional. The name must one of the resource types shown in the outputs. Sub resource types are usually attached to the resource\_type like a Public IP, NIC, managed identity etc. | `string` | `"user_assigned_identity"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | It is recommended that you specify a suffix for consistency. please use only lowercase characters when possible | `list(string)` | `[]` | no |
 | <a name="input_unique-include-numbers"></a> [unique-include-numbers](#input\_unique-include-numbers) | If you want to include numbers in the unique generation | `bool` | `true` | no |
 | <a name="input_unique-length"></a> [unique-length](#input\_unique-length) | Max length of the uniqueness suffix to be added | `number` | `4` | no |
